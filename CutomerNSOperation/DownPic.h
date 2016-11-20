@@ -18,7 +18,6 @@ typedef void (^CompleteBlock)(UIImage *);
 
 @interface DownPic : NSOperation
 
-
 @property (nonatomic, weak) id<downloadImageDelegate> delegate;
 
 @property (nonatomic, assign) NSInteger maxThreadConcurrentCount;
