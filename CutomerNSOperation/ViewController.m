@@ -5,7 +5,13 @@
 //  Created by ffm on 16/11/20.
 //  Copyright © 2016年 ITPanda. All rights reserved.
 //
-
+/*
+ 11.20更新：增加文件缓存，把图片资源存储到沙盒的caches文件夹里
+ 增加UI的操作，下载图片之后展示在view上（多线程并发）
+ 
+ 11.21更新：更新ui的操作没有放到主线程里，控制台输出警告啦
+ 文件缓存的逻辑，当内存里没有，文件缓存里存在该图片的话，那么在调用文件缓存里的图片的同时，同时应该把图片放到内存缓存里
+ */
 #import "ViewController.h"
 #import "DownPic.h"
 
@@ -29,14 +35,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.myDownPic.maxThreadConcurrentCount = 2;
-
-
-//    downPic.completeBlock = ^(UIImage *image){
-//        if (image)
-//        {
-//            NSLog(@"block提醒您：下载图片成功！");
-//        }
-//    };
+    //    downPic.completeBlock = ^(UIImage *image){
+    //        if (image)
+    //        {
+    //            NSLog(@"block提醒您：下载图片成功！");
+    //        }
+    //    };
 }
 
 
@@ -50,14 +54,12 @@
 {
     if (image)
     {
-        @synchronized (self) {
+        @synchronized (self)
+        {
             NSLog(@"delegate提醒您：下载图片成功！");
-            NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
-                UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(picCount*100, 0, 50, 50)];
-                imageView.image = image;
-                [self.view addSubview:imageView];
-            }];
-            [self.queue addOperation:blockOperation];
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(picCount*100, 0, 50, 50)];
+            imageView.image = image;
+            [self.view addSubview:imageView];
             picCount++;
         }
     }

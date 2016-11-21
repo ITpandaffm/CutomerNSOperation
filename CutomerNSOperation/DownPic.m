@@ -39,14 +39,14 @@
         UIImage *image = self.downloadDict[strURL];
         [self.delegate downloadOperation:self didFinishDownloadPic:image];
         return;
-    }
-    //判断之前是否下载过（在文件缓存里面找）
-    if ([self judgeImageExist:strURL])
+    } else if ([self judgeImageExist:strURL])  //判断之前是否下载过（在文件缓存里面找）
     {
         NSLog(@"在文件缓存里找到了下载过的痕迹！ 返回啦~！");
         NSData *picData = [[NSData alloc] initWithBase64EncodedString:self.filesInTmpDict[strURL] options:NSDataBase64DecodingIgnoreUnknownCharacters];
         UIImage *image = [UIImage imageWithData:picData];
         [self.delegate downloadOperation:self didFinishDownloadPic:image];
+        //同时也把图片也在内存里缓存一份~
+        [self.downloadDict setObject:image forKey:strURL];
         return;
     }
     
@@ -134,7 +134,7 @@
         } else
         {
             _filesInTmpDict = [NSMutableDictionary dictionary];
-
+            
         }
     }
     return _filesInTmpDict;
@@ -146,7 +146,7 @@
     {
         //照片存到文件缓存
         NSString *strPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject];
-         _fileStrPath = [strPath stringByAppendingPathComponent:@"/pics.plist"];
+        _fileStrPath = [strPath stringByAppendingPathComponent:@"/pics.plist"];
     }
     return _fileStrPath;
 }
